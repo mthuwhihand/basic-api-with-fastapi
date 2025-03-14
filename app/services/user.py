@@ -15,7 +15,7 @@ class UserService:
         user = self.user_repo.get_by_id(id)
         if user.role != Roles.ADMIN.value:
             return APIResponse(
-                status=status.HTTP_401_UNAUTHORIZED,
+                status=status.HTTP_403_FORBIDDEN,
                 message="You do not have permission to access the resource",
             )
         data = self.user_repo.search(limit, page, query)

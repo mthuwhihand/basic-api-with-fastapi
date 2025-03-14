@@ -34,25 +34,29 @@ class AuthService:
 
     def log_in(self, sign_in_data: SignIn):
         existing_user = self.user_repo.get_by_email(sign_in_data.email)
-        if existing_user:
-            existing_user.refresh_token = extentions.create_refresh_token(
-                {"id": existing_user.id}
-            )
-            if not extentions.is_valid_password(
-                sign_in_data.password, existing_user.password
-            ):
-                return APIResponse(
-                    status=status.HTTP_401_UNAUTHORIZED, message="Invalid password"
-                )
-
-            new_access_token = extentions.create_access_token({"id": existing_user.id})
-            data = UserSchema.model_validate(existing_user)
-            data.access_token = new_access_token
-            return APIResponse(
-                status=status.HTTP_200_OK, message="Login successfully", data=data
-            )
-        else:
+        if not existing_user:
             return APIResponse(status=status.HTTP_404_NOT_FOUND, message="Not found")
+
+        new_refresh_token = extentions.create_refresh_token({"id": existing_user.id})
+        # Update refresh token to db
+        update_data = {"refresh_token": new_refresh_token}
+
+        self.user_repo.update(existing_user.id, update_data)
+        existing_user.refresh_token = new_refresh_token
+
+        if not extentions.is_valid_password(
+            sign_in_data.password, existing_user.password
+        ):
+            return APIResponse(
+                status=status.HTTP_401_UNAUTHORIZED, message="Invalid password"
+            )
+
+        new_access_token = extentions.create_access_token({"id": existing_user.id})
+        data = UserSchema.model_validate(existing_user)
+        data.access_token = new_access_token
+        return APIResponse(
+            status=status.HTTP_200_OK, message="Login successfully", data=data
+        )
 
     def refresh_access_token(self, request: Request):
         id = extentions.get_id_from_request(request)
@@ -145,7 +149,7 @@ class AuthService:
                 )
 
             return APIResponse(
-                status=status.HTTP_401_UNAUTHORIZED,
+                status=status.HTTP_403_FORBIDDEN,
                 message="You do not have permission to delete this account!",
             )
         else:  # User wanna delete him/herself
@@ -164,6 +168,6 @@ class AuthService:
                 )
 
             return APIResponse(
-                status=status.HTTP_401_UNAUTHORIZED,
+                status=status.HTTP_403_FORBIDDEN,
                 message="Your account are admin account, Can not delete admin account!",
             )
