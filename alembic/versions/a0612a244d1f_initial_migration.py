@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 2cd1dea06efc
+Revision ID: a0612a244d1f
 Revises:
-Create Date: 2025-03-14 11:26:50.693625
+Create Date: 2025-03-14 14:25:25.415678
 
 """
 
@@ -15,7 +15,7 @@ from app.utils.extentions import gen_uuid, hash_password
 from app.core.config import settings, Roles
 
 # revision identifiers, used by Alembic.
-revision: str = "2cd1dea06efc"
+revision: str = "a0612a244d1f"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
