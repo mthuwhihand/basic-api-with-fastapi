@@ -47,6 +47,12 @@ def get_id_from_request(request: Request):
     return id
 
 
+def get_token(request: Request):
+    if not hasattr(request.state, "token"):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return request.state.token
+
+
 def gen_uuid():
     return str(uuid.uuid4())
 

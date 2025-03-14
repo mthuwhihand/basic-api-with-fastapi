@@ -12,7 +12,7 @@ auth_service = AuthService(UserRepository(db))
 
 @routers.patch("/", dependencies=[Depends(auth_middleware)])
 async def update_info(request: Request, data: UserUpdateSchema):
-    return auth_service.update_name(request, data)
+    return auth_service.update_info(request, data)
 
 
 @routers.delete("/", dependencies=[Depends(auth_middleware)])

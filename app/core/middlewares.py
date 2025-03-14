@@ -21,6 +21,7 @@ async def auth_middleware(
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
         request.state.data = payload
+        request.state.token = token
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

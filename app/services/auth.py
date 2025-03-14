@@ -56,12 +56,26 @@ class AuthService:
 
     def refresh_access_token(self, request: Request):
         id = extentions.get_id_from_request(request)
-        new_access_token = extentions.create_access_token({"id": id})
-        return APIResponse(
-            status=status.HTTP_200_OK,
-            message="Refresh access token successfully!",
-            data={"token": new_access_token},
-        )
+
+        user = self.user_repo.get_by_id(id)
+        if user:
+            if user.refresh_token == extentions.get_token(request):
+                new_access_token = extentions.create_access_token({"id": id})
+                return APIResponse(
+                    status=status.HTTP_200_OK,
+                    message="Refresh access token successfully!",
+                    data={"token": new_access_token},
+                )
+            else:
+                return APIResponse(
+                    status=status.HTTP_401_UNAUTHORIZED,
+                    message="Invalid refresh token!",
+                )
+        else:
+            return APIResponse(
+                status=status.HTTP_404_NOT_FOUND,
+                message="User not found!",
+            )
 
     def log_out(self, request: Request):
         id = extentions.get_id_from_request(request)
@@ -74,7 +88,7 @@ class AuthService:
             status=status.HTTP_200_OK, message="Logged out successfully!"
         )
 
-    def update_name(self, request: Request, data: UserUpdateSchema):
+    def update_info(self, request: Request, data: UserUpdateSchema):
         id = extentions.get_id_from_request(request)
         update_data = data.model_dump(exclude_unset=True)  # Chỉ lấy giá trị có dữ liệu
 
