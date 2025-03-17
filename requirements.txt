@@ -3,4 +3,5 @@ sqlalchemy
 psycopg2-binary
 pyjwt
 bcrypt
-orjson
+fastapi-mail
+jinja2

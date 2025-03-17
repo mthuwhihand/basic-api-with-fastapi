@@ -1,7 +1,16 @@
 from app.core.database import engine
-from fastapi import FastAPI
-from app.utils import logger
-from app.api.v1.routes import routers
+from fastapi import APIRouter, FastAPI
+from app.utils.logger import logger
+from app.api.v1 import auths, users
+from fastapi.staticfiles import StaticFiles
+
+
+routers = APIRouter(
+    prefix="/v1",
+)
+
+routers.include_router(auths.routers)
+routers.include_router(users.routers)
 
 
 def shutdown_application():
@@ -21,6 +30,7 @@ def start_application():
 
 
 app = start_application()
+app.mount("/static", StaticFiles(directory="app/static", html=True), name="static")
 
 
 @app.get("/")
